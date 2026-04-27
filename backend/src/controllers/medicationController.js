@@ -39,6 +39,10 @@ const doseLogSchema = Joi.object({
 });
 
 exports.createMedication = asyncHandler(async (req, res) => {
+  if (req.user.role !== "patient") {
+    return res.status(403).json({ message: "Only patients can create medication schedules." });
+  }
+
   const payload = await medicationSchema.validateAsync(req.body, { abortEarly: false });
 
   const medication = await Medication.create({
@@ -53,6 +57,10 @@ exports.createMedication = asyncHandler(async (req, res) => {
 });
 
 exports.listMedications = asyncHandler(async (req, res) => {
+  if (req.user.role !== "patient") {
+    return res.status(403).json({ message: "Only patients can view personal medication schedules." });
+  }
+
   const medications = await Medication.find({ user: req.user._id }).sort({
     createdAt: -1,
   });
@@ -61,6 +69,10 @@ exports.listMedications = asyncHandler(async (req, res) => {
 });
 
 exports.updateMedication = asyncHandler(async (req, res) => {
+  if (req.user.role !== "patient") {
+    return res.status(403).json({ message: "Only patients can update medication schedules." });
+  }
+
   const payload = await medicationUpdateSchema.min(1).validateAsync(req.body, { abortEarly: false });
   const medication = await Medication.findOneAndUpdate(
     { _id: req.params.medicationId, user: req.user._id },
@@ -79,6 +91,10 @@ exports.updateMedication = asyncHandler(async (req, res) => {
 });
 
 exports.logDose = asyncHandler(async (req, res) => {
+  if (req.user.role !== "patient") {
+    return res.status(403).json({ message: "Only patients can log dose intake." });
+  }
+
   const payload = await doseLogSchema.validateAsync(req.body, { abortEarly: false });
   const medication = await Medication.findOne({ _id: req.params.medicationId, user: req.user._id });
 
@@ -105,7 +121,7 @@ exports.logDose = asyncHandler(async (req, res) => {
         $gte: windowStart,
         $lte: windowEnd,
       },
-      status: { $in: ["pending", "missed"] },
+      status: { $in: ["pending", "skipped"] },
     },
     {
       $set: {
@@ -122,6 +138,10 @@ exports.logDose = asyncHandler(async (req, res) => {
 });
 
 exports.getMedicationTimeline = asyncHandler(async (req, res) => {
+  if (req.user.role !== "patient") {
+    return res.status(403).json({ message: "Only patients can view this medication timeline." });
+  }
+
   const medication = await Medication.findOne({ _id: req.params.medicationId, user: req.user._id });
   if (!medication) {
     return res.status(404).json({ message: "Medication not found." });

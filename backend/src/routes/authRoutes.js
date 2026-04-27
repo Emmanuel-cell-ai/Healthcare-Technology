@@ -2,13 +2,20 @@ const express = require("express");
 
 const authController = require("../controllers/authController");
 const { requireAuth } = require("../middleware/auth");
+const { upload } = require("../middleware/upload");
 
 const router = express.Router();
 
-router.post("/signup/request-otp", authController.requestSignupOtp);
-router.post("/signup/verify-otp", authController.verifySignupOtp);
-router.post("/login/request-otp", authController.requestLoginOtp);
-router.post("/login/verify-otp", authController.verifyLoginOtp);
+router.post(
+  "/signup",
+  upload.fields([
+    { name: "doctorLicense", maxCount: 1 },
+    { name: "medicalReports", maxCount: 5 },
+  ]),
+  authController.signup,
+);
+router.post("/login", authController.login);
+router.post("/forgot-password", authController.forgotPassword);
 router.get("/me", requireAuth, authController.getCurrentUser);
 
 module.exports = router;

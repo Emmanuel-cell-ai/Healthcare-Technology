@@ -25,15 +25,15 @@ async function processMedicationSchedules() {
       const scheduledFor = buildScheduleDate(now, scheduleTime);
       const isDue = isWithinReminderWindow(now, scheduledFor, medication.adherenceWindowMinutes);
 
-      if (!isDue) {
-        if (scheduledFor < now) {
-          await MedicationAlert.updateMany(
+        if (!isDue) {
+          if (scheduledFor < now) {
+            await MedicationAlert.updateMany(
             {
               medication: medication._id,
               scheduledFor,
               status: "pending",
             },
-            { $set: { status: "missed" } },
+            { $set: { status: "skipped" } },
           );
         }
         continue;

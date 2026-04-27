@@ -29,7 +29,7 @@ const medicationAlertSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "completed", "missed"],
+      enum: ["pending", "completed", "skipped"],
       default: "pending",
     },
     acknowledgedAt: Date,
