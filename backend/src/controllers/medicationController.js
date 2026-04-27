@@ -33,7 +33,7 @@ const medicationUpdateSchema = medicationSchema.fork(
 );
 
 const doseLogSchema = Joi.object({
-  takenAt: Joi.date().default(() => new Date(), "current timestamp"),
+  takenAt: Joi.date().default(() => new Date()),
   notes: Joi.string().trim().max(500).allow("", null),
   sideEffects: Joi.string().trim().max(500).allow("", null),
 });
