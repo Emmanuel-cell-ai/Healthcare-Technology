@@ -1,0 +1,346 @@
+# Healthcare Technology Project - Database Schema Specification
+
+**Version:** 1.0  
+**Last Updated:** April 2026  
+**Database:** MongoDB  
+**Project:** Healthcare Medication Tracker
+
+---
+
+## 1. Overview
+
+This document provides the technical specification for the Healthcare Medication Tracker application's database schema. The system manages users (patients and doctors), medications, appointments, dose tracking, alerts, and secure authentication.
+
+---
+
+## 2. Collections
+
+### 2.1 Users Collection
+
+**Collection Name:** `users`
+
+**Purpose:** Stores authentication and profile information for all system users.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | String | Yes | Full name of the user |
+| `email` | String | Yes | Unique email address |
+| `phone` | String | Yes | Contact phone number |
+| `password` | String | Yes | Encrypted password hash |
+| `role` | String | Yes | User type: `patient` or `doctor` |
+| `isVerified` | Boolean | Yes | Email/phone verification status |
+| `createdAt` | Date | Yes | Account creation timestamp |
+| `updatedAt` | Date | Yes | Last modification timestamp |
+
+**Patient-Specific Fields:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `emergencyContact` | Object | No | Emergency contact details |
+| `emergencyContact.name` | String | No | Contact name |
+| `emergencyContact.phone` | String | No | Contact phone |
+| `emergencyContact.relationship` | String | No | Relationship to patient |
+| `medicalNotes` | String | No | Additional medical information |
+
+**Doctor-Specific Fields:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `licenseNumber` | String | No | Medical license verification |
+| `specialization` | String | No | Medical specialty area |
+| `isAvailable` | Boolean | No | Availability status for new patients |
+| `maxPatients` | Number | No | Maximum assigned patients limit |
+
+**Indexes:**
+
+```javascript
+{ email: 1 } - Unique
+{ phone: 1 } - Unique
+{ role: 1 }
+```
+
+---
+
+### 2.2 Medications Collection
+
+**Collection Name:** `medications`
+
+**Purpose:** Tracks patient medications and prescription details.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | ObjectId | Yes | Reference to `users` collection |
+| `doctorId` | ObjectId | Yes | Reference to `users` collection |
+| `name` | String | Yes | Medication name |
+| `dosage` | String | Yes | Dosage amount and unit |
+| `frequency` | Array | Yes | Scheduled times (e.g., `["08:00", "20:00"]`) |
+| `startDate` | Date | Yes | Prescription start date |
+| `endDate` | Date | No | Prescription end date |
+| `instructions` | String | No | Special administration instructions |
+| `isActive` | Boolean | Yes | Current active status |
+| `createdAt` | Date | Yes | Record creation timestamp |
+| `updatedAt` | Date | Yes | Last modification timestamp |
+
+**Indexes:**
+
+```javascript
+{ patientId: 1 }
+{ doctorId: 1 }
+{ isActive: 1 }
+```
+
+---
+
+### 2.3 Dose Logs Collection
+
+**Collection Name:** `dose_logs`
+
+**Purpose:** Records each instance of medication administration for adherence tracking.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `medicationId` | ObjectId | Yes | Reference to `medications` collection |
+| `patientId` | ObjectId | Yes | Reference to `users` collection |
+| `scheduledTime` | Date | Yes | Originally scheduled administration time |
+| `takenTime` | Date | No | Actual time medication was taken |
+| `status` | String | Yes | Status: `taken`, `missed`, `skipped` |
+| `notes` | String | No | Patient notes for this dose |
+| `sideEffects` | Array | No | Reported side effects |
+| `createdAt` | Date | Yes | Record creation timestamp |
+
+**Indexes:**
+
+```javascript
+{ medicationId: 1 }
+{ patientId: 1 }
+{ scheduledTime: 1 }
+{ status: 1 }
+```
+
+---
+
+### 2.4 Medication Alerts Collection
+
+**Collection Name:** `medication_alerts`
+
+**Purpose:** Manages medication reminder notifications and their acknowledgment status.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `medicationId` | ObjectId | Yes | Reference to `medications` collection |
+| `patientId` | ObjectId | Yes | Reference to `users` collection |
+| `scheduledTime` | Date | Yes | When the alert should trigger |
+| `status` | String | Yes | Status: `pending`, `completed`, `skipped` |
+| `acknowledgedAt` | Date | No | When patient acknowledged the reminder |
+| `createdAt` | Date | Yes | Record creation timestamp |
+
+**Indexes:**
+
+```javascript
+{ medicationId: 1 }
+{ patientId: 1 }
+{ scheduledTime: 1 }
+{ status: 1 }
+```
+
+---
+
+### 2.5 OTP Codes Collection
+
+**Collection Name:** `otp_codes`
+
+**Purpose:** Manages one-time password verification for authentication flows.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `code` | String | Yes | 6-digit verification code |
+| `purpose` | String | Yes | Purpose: `signup`, `login`, `password_reset` |
+| `contact` | String | Yes | Email or phone number |
+| `expiresAt` | Date | Yes | Expiration timestamp |
+| `attempts` | Number | Yes | Number of verification attempts |
+| `isUsed` | Boolean | Yes | Whether code has been used |
+| `createdAt` | Date | Yes | Record creation timestamp |
+
+**Indexes:**
+
+```javascript
+{ contact: 1, purpose: 1 }
+{ expiresAt: 1 }
+```
+
+**TTL Index:**
+
+```javascript
+{ expiresAt: 1 } - Auto-delete after expiration
+```
+
+---
+
+### 2.6 Doctor-Patient Assignments Collection
+
+**Collection Name:** `doctor_patient_assignments`
+
+**Purpose:** Manages the relationship between doctors and their assigned patients.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `doctorId` | ObjectId | Yes | Reference to `users` collection |
+| `patientId` | ObjectId | Yes | Reference to `users` collection |
+| `appointmentId` | ObjectId | No | Reference to `appointments` collection |
+| `status` | String | Yes | Status: `active`, `completed` |
+| `assignedAt` | Date | Yes | Assignment creation timestamp |
+| `completedAt` | Date | No | Assignment completion timestamp |
+
+**Indexes:**
+
+```javascript
+{ doctorId: 1 }
+{ patientId: 1 }
+{ status: 1 }
+{ doctorId: 1, patientId: 1 } - Unique compound
+```
+
+---
+
+### 2.7 Chat Messages Collection
+
+**Collection Name:** `chat_messages`
+
+**Purpose:** Stores communication between doctors and patients.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `senderId` | ObjectId | Yes | Reference to `users` collection |
+| `receiverId` | ObjectId | Yes | Reference to `users` collection |
+| `content` | String | Yes | Message text content |
+| `isRead` | Boolean | Yes | Read status |
+| `createdAt` | Date | Yes | Message timestamp |
+
+**Indexes:**
+
+```javascript
+{ senderId: 1 }
+{ receiverId: 1 }
+{ createdAt: 1 }
+{ receiverId: 1, isRead: 1 }
+```
+
+---
+
+### 2.8 Appointments Collection
+
+**Collection Name:** `appointments`
+
+**Purpose:** Manages scheduled visits between doctors and patients.
+
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `patientId` | ObjectId | Yes | Reference to `users` collection |
+| `doctorId` | ObjectId | Yes | Reference to `users` collection |
+| `status` | String | Yes | Status: `waiting`, `accepted`, `completed`, `cancelled` |
+| `queueNumber` | Number | No | Position in waiting queue |
+| `notes` | String | No | Appointment notes |
+| `createdAt` | Date | Yes | Record creation timestamp |
+| `updatedAt` | Date | Yes | Last modification timestamp |
+
+**Indexes:**
+
+```javascript
+{ patientId: 1 }
+{ doctorId: 1 }
+{ status: 1 }
+```
+
+---
+
+## 3. Data Relationships
+
+```
+User (Patient)
+    ├── Medications[] → medicationId
+    │       ├── DoseLogs[] → medicationId
+    │       └── Alerts[] → medicationId
+    ├── Appointments[] → patientId
+    ├── ChatMessages[] (sent/received)
+    └── Assignments[] → patientId
+
+User (Doctor)
+    ├── Medications[] → doctorId (prescribed)
+    ├── Appointments[] → doctorId
+    ├── ChatMessages[] (sent/received)
+    └── Assignments[] → doctorId
+```
+
+---
+
+## 4. API Endpoints Summary
+
+### Authentication
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/verify-otp` - OTP verification
+- `POST /api/auth/forgot-password` - Password reset request
+- `POST /api/auth/reset-password` - Password reset
+
+### Patients
+- `GET /api/patients/medications` - List patient medications
+- `POST /api/patients/medications` - Add medication
+- `GET /api/patients/dose-logs` - View dose history
+- `POST /api/patients/dose-logs` - Log dose taken
+- `GET /api/patients/alerts` - Get pending alerts
+
+### Doctors
+- `GET /api/doctors/patients` - List assigned patients
+- `GET /api/doctors/appointments` - List appointments
+- `POST /api/doctors/medications` - Prescribe medication
+
+### General
+- `GET /api/health` - Health check
+- `POST /api/chat/send` - Send message
+- `GET /api/chat/messages/:userId` - Get conversation
+
+---
+
+## 5. Security Considerations
+
+- Passwords are hashed using bcrypt
+- OTP codes expire within 5 minutes
+- Maximum 3 OTP verification attempts per code
+- JWT tokens used for session management
+- Role-based access control (RBAC) enforced at controller level
+
+---
+
+## 6. Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| Database | MongoDB with Mongoose ODM |
+| Backend | Node.js + Express.js |
+| Authentication | JWT + bcrypt + OTP |
+| File Storage | Local filesystem (uploads/) |
+| Frontend | React + Vite |
+
+---
+
+## 7. Revision History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | April 2026 | Initial schema specification |
