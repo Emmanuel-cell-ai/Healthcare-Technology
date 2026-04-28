@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputsField.jsx";
 import Button from "../components/Button.jsx";
@@ -21,7 +21,7 @@ function Verification() {
         <InputField type="text" placeholder="Enter code" value={code} onChange={(e) => setCode(e.target.value)} />
         <Button type="submit">Verify</Button>
       </form>
-      <p>Didn’t receive code? <span onClick={() => console.log("Resend code")}>Resend Code</span></p>
+      <p>Didn't receive code? <span onClick={() => console.log("Resend code")}>Resend Code</span></p>
     </FormContainer>
   );
 }

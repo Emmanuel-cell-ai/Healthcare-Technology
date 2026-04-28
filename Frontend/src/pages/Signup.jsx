@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputsField.jsx";
 import Button from "../components/Button.jsx";
 import FormContainer from "../components/FormContainer.jsx";
-import CareDiv from "../assets/CareDiv.PNG";   // ✅ logo import
+import CareDiv from "../assets/CareDiv.PNG";
 
 function Signup() {
   const [fullName, setFullName] = useState("");

@@ -1,5 +1,4 @@
-import React from "react";
-// import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputsField.jsx";
 import Button from "../components/Button.jsx";
@@ -17,7 +16,7 @@ function ForgotPassword() {
 
   return (
     <FormContainer title="Forgot Password?">
-      <p>Enter your email and we’ll send you a code to reset your password.</p>
+      <p>Enter your email and we'll send you a code to reset your password.</p>
       <form onSubmit={handleSendCode}>
         <InputField type="email" placeholder="yourname@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Button type="submit">Send Code</Button>

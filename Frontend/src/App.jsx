@@ -7,7 +7,6 @@ import ForgotPassword from "./pages/ForgotPassword.jsx";
 import Verification from "./pages/Verification.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import SuccessScreen from "./pages/SuccessScreen.jsx";
-import "./styles/theme.css"; // global theme
 
 function App() {
   return (

@@ -7,13 +7,13 @@ function Onboarding() {
   return (
     <div className="onboarding-container">
       <h2>Welcome to CareDiv</h2>
-      <p>Let’s help you build a better health routine.</p>
+      <p>Let's help you build a better health routine.</p>
       <ul>
         <li>Stay on top of your medication</li>
         <li>Track your symptoms daily</li>
         <li>Prepare for better consultation</li>
       </ul>
-      <button onClick={() => navigate("/signup")}>
+      <button className="btn" onClick={() => navigate("/signup")}>
         Next
       </button>
     </div>

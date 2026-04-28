@@ -11,7 +11,7 @@ function SplashScreen() {
       <h1>CareDiv</h1>
       <p>Track. Remind. Care</p>
       <p>Your Health, Your Way</p>
-      <button onClick={() => navigate("/onboarding")}>
+      <button className="btn" onClick={() => navigate("/onboarding")}>
         Get Started
       </button>
     </div>
