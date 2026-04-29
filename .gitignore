@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Redundant frontend files (duplicates in frontend folder)
+/eslint.config.js
+/index.html
+/package.json
+/package-lock.json
+/vite.config.js
+/README.md
+/frontend/.env
