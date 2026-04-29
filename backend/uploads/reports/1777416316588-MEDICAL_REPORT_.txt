@@ -1,0 +1,110 @@
+MEDICAL REPORT – CONFIRMED CASE OF MALARIA
+Patient Information
+
+Name: Emmanuel Asiedu
+
+Age/Sex: 26years male
+
+Patient ID/Hospital Number: DD23
+
+Date of Admission/Consultation: 26/04/26
+
+Chief Complaints (Presenting Symptoms)
+The patient presented with a 3–5 day history of:
+
+High-grade fever (103°F/39.5°C) with rigors (shaking chills)
+
+Cyclical fever pattern (occurring every 48 hours – tertian malaria)
+
+Profuse sweating followed by fever defervescence
+
+Severe headache
+
+Generalized myalgia (muscle pain) and arthralgia (joint pain)
+
+Fatigue and malaise
+
+Nausea with occasional vomiting
+
+[Optional: Mild jaundice / abdominal pain / diarrhea]
+
+Vitals on Admission
+
+Temperature: 102.8°F (39.3°C)
+
+Blood Pressure: 110/70 mmHg
+
+Heart Rate: 112 bpm (tachycardia)
+
+Respiratory Rate: 20/min
+
+Oxygen Saturation (SpO2): 96% on room air
+
+Physical Examination Findings
+
+Patient appeared acutely ill, febrile, and lethargic
+
+Pallor present (mild anemia)
+
+No meningeal signs
+
+Splenomegaly (mild to moderate) – palpable 2 cm below left costal margin
+
+Hepatomegaly – not significant
+
+No rash or petechiae
+
+Laboratory Investigations
+
+Test	Result	Reference Range
+Rapid Diagnostic Test (RDT)	Positive for Plasmodium falciparum / P. vivax	Negative
+Peripheral Blood Smear (Thick/Thin)	Ring forms seen; parasite density = 1.2% (or 12,000/μL)	None seen
+Hemoglobin (Hb)	9.8 g/dL	12–16 g/dL
+Platelet Count	85,000/μL (thrombocytopenia)	150,000–450,000/μL
+Total Leukocyte Count	4,200/μL (normal / mild leukopenia)	4,000–11,000/μL
+Blood Glucose	98 mg/dL (normal)	70–100 mg/dL
+Liver Function Test (Bilirubin)	Total: 1.5 mg/dL (mild elevation)	0.3–1.2 mg/dL
+Diagnosis
+
+Confirmed: Uncomplicated Malaria due to Plasmodium [species]
+
+Severity: No signs of severe malaria (cerebral malaria, severe anemia, renal failure, respiratory distress, or hypoglycemia)
+
+Treatment Plan
+
+Antimalarial Therapy:
+
+Artemether–Lumefantrine (Coartem®) – [dose based on weight] twice daily for 3 days
+
+Or (for P. vivax): Chloroquine + Primaquine (after G6PD testing)
+
+Supportive Care:
+
+IV fluids if vomiting persists
+
+Paracetamol 500 mg every 6 hours PRN for fever
+
+Antiemetics as needed
+
+Monitoring:
+
+Daily peripheral smear until parasite clearance
+
+Monitor platelet count and Hb every 48 hours
+
+Prognosis
+Good, as patient has uncomplicated disease, no comorbidities, and early presentation.
+
+Follow-up Plan
+
+Review in 7 days for repeat blood smear
+
+Complete full course of antimalarials (do not stop early)
+
+Return immediately if confusion, bleeding, difficulty breathing, or jaundice worsens
+
+Physician’s Signature
+
+Dr. Kario Mask
+Diagnosis Dept
+DD239800kj

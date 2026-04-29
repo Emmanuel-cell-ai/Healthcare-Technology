@@ -111,3 +111,27 @@ exports.getMyRecords = asyncHandler(async (req, res) => {
     alerts,
   });
 });
+
+exports.uploadMedicalReports = asyncHandler(async (req, res) => {
+  const files = req.files || [];
+  if (!files.length) {
+    return res.status(400).json({ message: "At least one report file is required." });
+  }
+
+  const uploadedReports = files.map((file) => ({
+    fileName: file.filename,
+    originalName: file.originalname,
+    mimeType: file.mimetype,
+    filePath: `/uploads/reports/${file.filename}`,
+    uploadedAt: new Date(),
+  }));
+
+  req.user.medicalReports = [...req.user.medicalReports, ...uploadedReports];
+  await req.user.save();
+
+  return res.status(200).json({
+    message: "Medical report uploaded successfully.",
+    medicalReports: req.user.medicalReports,
+    user: req.user.toSafeObject(),
+  });
+});

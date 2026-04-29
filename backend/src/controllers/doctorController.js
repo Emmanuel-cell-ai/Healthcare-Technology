@@ -61,6 +61,14 @@ exports.getDashboard = asyncHandler(async (req, res) => {
   });
 });
 
+exports.listAppointments = asyncHandler(async (req, res) => {
+  const appointments = await Appointment.find({ doctor: req.user._id })
+    .sort({ assignedAt: 1 })
+    .populate("patient", "fullName email contact medicalNotes timezone medicalReports");
+
+  return res.status(200).json({ appointments });
+});
+
 exports.listPatients = asyncHandler(async (req, res) => {
   const assignments = await DoctorPatientAssignment.find({
     doctor: req.user._id,
@@ -154,5 +162,25 @@ exports.updateAppointmentStatus = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: "Appointment status updated.",
     appointment,
+  });
+});
+
+exports.uploadLicense = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "A doctor license file is required." });
+  }
+
+  req.user.doctorLicense = {
+    fileName: req.file.filename,
+    originalName: req.file.originalname,
+    mimeType: req.file.mimetype,
+    filePath: `/uploads/licenses/${req.file.filename}`,
+    uploadedAt: new Date(),
+  };
+  await req.user.save();
+
+  return res.status(200).json({
+    message: "Doctor license uploaded successfully.",
+    user: req.user.toSafeObject(),
   });
 });

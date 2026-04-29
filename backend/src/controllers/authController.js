@@ -38,6 +38,12 @@ const forgotPasswordSchema = Joi.object({
   email: Joi.string().trim().email().required(),
 });
 
+const resetPasswordSchema = Joi.object({
+  email: Joi.string().trim().email().required(),
+  temporaryPassword: Joi.string().min(8).max(128).required(),
+  newPassword: Joi.string().min(8).max(128).required(),
+});
+
 function toFileMetadata(file) {
   if (!file) {
     return null;
@@ -142,6 +148,27 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "A temporary password has been sent to the user's email.",
+  });
+});
+
+exports.resetPassword = asyncHandler(async (req, res) => {
+  const payload = await resetPasswordSchema.validateAsync(req.body, { abortEarly: false });
+  const user = await User.findOne({ email: payload.email.toLowerCase() });
+
+  if (!user) {
+    return res.status(404).json({ message: "No account was found for this email address." });
+  }
+
+  const isValidPassword = await bcrypt.compare(payload.temporaryPassword, user.passwordHash);
+  if (!isValidPassword) {
+    return res.status(401).json({ message: "The temporary password is invalid." });
+  }
+
+  user.passwordHash = await bcrypt.hash(payload.newPassword, 12);
+  await user.save();
+
+  return res.status(200).json({
+    message: "Password reset successful. You can now log in with your new password.",
   });
 });
 

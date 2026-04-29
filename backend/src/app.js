@@ -12,10 +12,24 @@ const healthRoutes = require("./routes/healthRoutes");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 
 const app = express();
+const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "*",
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (configuredOrigins.length === 0 || configuredOrigins.includes("*") || configuredOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
   }),
 );
 app.use(express.json());
