@@ -20,15 +20,26 @@ const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin) {
+      // Allow common development origins by default or if they are in configuredOrigins
+      const developmentOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+      ];
+
+      if (
+        !origin ||
+        configuredOrigins.length === 0 ||
+        configuredOrigins.includes("*") ||
+        configuredOrigins.includes(origin) ||
+        developmentOrigins.includes(origin)
+      ) {
         return callback(null, true);
       }
 
-      if (configuredOrigins.length === 0 || configuredOrigins.includes("*") || configuredOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
+      console.error(`CORS Error: Origin ${origin} not allowed. Allowed origins: ${configuredOrigins.join(", ") || "Defaults"}`);
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
   }),
 );
