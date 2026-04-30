@@ -53,6 +53,20 @@ const Chat = () => {
     return Array.from(byId.values());
   }, [appointments, conversations]);
 
+  const currentIndex = doctors.findIndex((d) => d.id === selectedDoctorId);
+
+  const handlePreviousDoctor = () => {
+    if (currentIndex > 0) {
+      setSelectedDoctorId(doctors[currentIndex - 1].id);
+    }
+  };
+
+  const handleNextDoctor = () => {
+    if (currentIndex < doctors.length - 1) {
+      setSelectedDoctorId(doctors[currentIndex + 1].id);
+    }
+  };
+
   useEffect(() => {
     if (!selectedDoctorId && doctors.length) {
       setSelectedDoctorId(doctors[0].id);
@@ -115,12 +129,34 @@ const Chat = () => {
 
         <div className="chat-container">
           <div className="chat-header">
+            <div className="chat-nav-prev">
+              <button
+                type="button"
+                className="chat-nav-btn"
+                onClick={handlePreviousDoctor}
+                disabled={currentIndex <= 0}
+                title="Previous doctor"
+              >
+                &lt;
+              </button>
+            </div>
             <div className="chat-participant">
               <div className="chat-avatar">{(doctor?.fullName || 'D').charAt(0).toUpperCase()}</div>
               <div>
                 <h3>{doctor?.fullName || 'Doctor Chat'}</h3>
                 <p>{doctor?.specialization || 'Assigned care team'}</p>
               </div>
+            </div>
+            <div className="chat-nav-next">
+              <button
+                type="button"
+                className="chat-nav-btn"
+                onClick={handleNextDoctor}
+                disabled={currentIndex >= doctors.length - 1}
+                title="Next doctor"
+              >
+                &gt;
+              </button>
             </div>
             <select value={selectedDoctorId} onChange={(e) => setSelectedDoctorId(e.target.value)}>
               {doctors.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}

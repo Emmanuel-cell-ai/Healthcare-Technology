@@ -32,6 +32,20 @@ const DoctorChat = () => {
     }))
     .filter((patient) => patient.id);
 
+  const currentIndex = patientList.findIndex((p) => p.id === selectedPatientId);
+
+  const handlePreviousPatient = () => {
+    if (currentIndex > 0) {
+      setSelectedPatientId(patientList[currentIndex - 1].id);
+    }
+  };
+
+  const handleNextPatient = () => {
+    if (currentIndex < patientList.length - 1) {
+      setSelectedPatientId(patientList[currentIndex + 1].id);
+    }
+  };
+
   // Initialize with first patient on mount
   useEffect(() => {
     if (patientList.length && !selectedPatientId) {
@@ -95,12 +109,34 @@ const DoctorChat = () => {
 
         <div className="chat-container">
           <div className="chat-header">
+            <div className="chat-nav-prev">
+              <button
+                type="button"
+                className="chat-nav-btn"
+                onClick={handlePreviousPatient}
+                disabled={currentIndex <= 0}
+                title="Previous patient"
+              >
+                &lt;
+              </button>
+            </div>
             <div className="chat-participant">
               <div className="chat-avatar">{(selectedPatient?.fullName || 'P').charAt(0).toUpperCase()}</div>
               <div>
                 <h3>{selectedPatient?.fullName || 'Patient chat'}</h3>
                 <p>{selectedPatient?.email || 'Secure patient channel'}</p>
               </div>
+            </div>
+            <div className="chat-nav-next">
+              <button
+                type="button"
+                className="chat-nav-btn"
+                onClick={handleNextPatient}
+                disabled={currentIndex >= patientList.length - 1}
+                title="Next patient"
+              >
+                &gt;
+              </button>
             </div>
             <select value={selectedPatientId} onChange={(e) => setSelectedPatientId(e.target.value)}>
               {patientList.map((patient) => (
