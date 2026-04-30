@@ -23,6 +23,7 @@ const Chat = () => {
   const [selectedDoctorId, setSelectedDoctorId] = useState(doctorIdFromQuery || '');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const doctors = useMemo(() => {
     const byId = new Map();
@@ -55,13 +56,18 @@ const Chat = () => {
   useEffect(() => {
     if (!selectedDoctorId && doctors.length) {
       setSelectedDoctorId(doctors[0].id);
-      return;
     }
+  }, [doctors.length]);
 
+  useEffect(() => {
     if (selectedDoctorId) {
-      fetchConversation(selectedDoctorId).catch((fetchError) => setError(fetchError.message));
+      setIsLoading(true);
+      setError('');
+      fetchConversation(selectedDoctorId)
+        .catch((fetchError) => setError(fetchError.message))
+        .finally(() => setIsLoading(false));
     }
-  }, [selectedDoctorId, doctors]);
+  }, [selectedDoctorId, fetchConversation]);
 
   const handleSend = async (event) => {
     event.preventDefault();
@@ -71,10 +77,13 @@ const Chat = () => {
 
     try {
       setError('');
+      setIsLoading(true);
       await sendMessage(selectedDoctorId, message);
       setMessage('');
     } catch (sendError) {
       setError(sendError.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -121,7 +130,12 @@ const Chat = () => {
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="chat-messages">
-            {!messages.length ? <div className="chat-empty">No messages yet. Start the conversation with your doctor.</div> : null}
+            {isLoading && !messages.length && (
+              <div className="chat-loading">Loading messages...</div>
+            )}
+            {!isLoading && !messages.length && (
+              <div className="chat-empty">No messages yet. Start the conversation with your doctor.</div>
+            )}
             {messages.map((chat) => (
               <div
                 key={chat.id || chat._id}

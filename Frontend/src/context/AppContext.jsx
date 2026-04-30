@@ -214,7 +214,6 @@ export const AppProvider = ({ children }) => {
   const fetchConversation = async (participantId) => {
     const response = await get(`/chat/${participantId}/messages`, token);
     setActiveConversation(response);
-    await refreshConversations();
     return response;
   };
 

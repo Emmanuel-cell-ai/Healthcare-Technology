@@ -20,6 +20,8 @@ const DoctorChat = () => {
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
   const patientList = assignedPatients
     .map((assignment) => assignment.patient || assignment)
     .filter(Boolean)
@@ -30,17 +32,23 @@ const DoctorChat = () => {
     }))
     .filter((patient) => patient.id);
 
+  // Initialize with first patient on mount
   useEffect(() => {
-    if (!selectedPatientId && patientList.length) {
-      const patientId = patientList[0].id;
-      setSelectedPatientId(patientId);
-      return;
+    if (patientList.length && !selectedPatientId) {
+      setSelectedPatientId(patientList[0].id);
     }
+  }, [patientList.length]);
 
+  // Fetch conversation when selected patient changes
+  useEffect(() => {
     if (selectedPatientId) {
-      fetchConversation(selectedPatientId).catch((fetchError) => setError(fetchError.message));
+      setIsLoading(true);
+      setError('');
+      fetchConversation(selectedPatientId)
+        .catch((fetchError) => setError(fetchError.message))
+        .finally(() => setIsLoading(false));
     }
-  }, [patientList, selectedPatientId]);
+  }, [selectedPatientId, fetchConversation]);
 
   const handleSend = async (event) => {
     event.preventDefault();
@@ -50,10 +58,13 @@ const DoctorChat = () => {
 
     try {
       setError('');
+      setIsLoading(true);
       await sendMessage(selectedPatientId, message);
       setMessage('');
     } catch (sendError) {
       setError(sendError.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   const selectedPatient = patientList.find((patient) => patient.id === selectedPatientId);
@@ -100,16 +111,24 @@ const DoctorChat = () => {
 
           {error && <div className="alert alert-error">{error}</div>}
           <div className="chat-messages">
-            {!messages.length ? <div className="chat-empty">No messages yet. Start by checking in with your patient.</div> : null}
-            {messages.map((chat) => (
-              <div
-                key={chat.id || chat._id}
-                className={`chat-bubble ${(chat.receiver?.id || chat.receiver?._id) === selectedPatientId ? 'sent' : 'received'}`}
-              >
-                <p>{chat.body}</p>
-                <span className="chat-time">{formatMessageTime(chat.createdAt)}</span>
-              </div>
-            ))}
+            {isLoading && !messages.length && (
+              <div className="chat-loading">Loading messages...</div>
+            )}
+            {!isLoading && !messages.length && (
+              <div className="chat-empty">No messages yet. Start by checking in with your patient.</div>
+            )}
+            {messages.map((chat) => {
+              const isSent = (chat.sender?.id || chat.sender?._id) === selectedPatientId ? false : true;
+              return (
+                <div
+                  key={chat.id || chat._id}
+                  className={`chat-bubble ${isSent ? 'sent' : 'received'}`}
+                >
+                  <p>{chat.body}</p>
+                  <span className="chat-time">{formatMessageTime(chat.createdAt)}</span>
+                </div>
+              );
+            })}
           </div>
           <form onSubmit={handleSend} className="chat-input-area">
             <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write a patient update..." />
